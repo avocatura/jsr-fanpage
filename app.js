@@ -1,15 +1,19 @@
 // Initialize Firebase
-var config = {
-  apiKey: '<your-api-key>',
-  authDomain: '<your-auth-domain>',
-  databaseURL: '<your-database-url>',
-  storageBucket: '<your-storage-bucket>'
-};
-firebase.initializeApp(config);
+  var config = {
+    apiKey: "AIzaSyBlDI89mbE_SdfJPyrY-v6CPLEfhi1ilW8",
+    authDomain: "newproject-651c7.firebaseapp.com",
+    databaseURL: "https://newproject-651c7.firebaseio.com",
+    projectId: "newproject-651c7",
+    storageBucket: "newproject-651c7.appspot.com",
+    messagingSenderId: "262461235155"
+  };
+  firebase.initializeApp(config);
 
 $(document).ready(function() {
   var database = firebase.database();
-
+  // create a section for messages data in your db
+  var messagesReference = database.ref('messages');
+  getFanMessages();
 
   // CREATE
 
@@ -24,9 +28,6 @@ $(document).ready(function() {
     // clear message input (for UX purposes)
     $('#message').val('');
 
-    // create a section for messages data in your db
-    var messagesReference = database.ref('messages');
-
     // use the set method to save data to the messages
     messagesReference.push({
       message: message,
@@ -37,11 +38,18 @@ $(document).ready(function() {
   // READ
   function getFanMessages() {
 
-    // use reference to app database to listen for changes in messages data
-    // hint: use something referring to 'value'
+    messagesReference.on('child_added', function(data){
+    var message = (data.val()).message;
+    var li = document.createElement("LI");
+    var textNode = message + " " + "<button class='btn-delete'>Delete</button>";
+    li.innerHTML = textNode;
+    document.getElementById("message-board").appendChild(li);
+    });
 
-      // iterate through results coming from database call; messages
-
-        // bind the results to the DOM
+    $(".btn-delete").click(function() {
+        messagesReference.remove(function(data) {
+          $(this).parent().remove();
+      });
+    });
   }
 });
